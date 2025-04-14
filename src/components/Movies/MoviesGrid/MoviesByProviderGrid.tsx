@@ -3,8 +3,8 @@ import { fetchTopByStreamingService } from '@/actions/tmdb';
 import { MovieApiResponse, MovieFilter, MovieObject } from '@/types/Movie';
 import { useEffect, useState } from 'react';
 import { FaAngleDown } from 'react-icons/fa6';
-import { Dropdown, DropdownItem } from '../Dropdown/Dropdown';
-import { MovieCard } from './MovieCard';
+import { Dropdown, DropdownItem } from '../../Dropdown/Dropdown';
+import { MovieCard } from '../MovieCard';
 
 interface Props {
   movieProviders: MovieFilter[];
@@ -15,19 +15,18 @@ export const MoviesByProviderGrid = ({ movieProviders }: Props) => {
   const [movies, setMovies] = useState<MovieObject[]>([]);
 
   useEffect(() => {
-    const handleProviderChanged = async () => {
-      if (selectedProvider) {
-        const data: MovieApiResponse = await fetchTopByStreamingService(selectedProvider.id);
-        console.log('Provider is: ', selectedProvider);
-        console.log('Data is: ', data);
-        setMovies(data.results.slice(0, 3));
-      }
+    const handleProviderChanged = async (providerId: number) => {
+      const data: MovieApiResponse<MovieObject[]> = await fetchTopByStreamingService(providerId);
+      console.log('Provider is: ', selectedProvider);
+      console.log('Data is: ', data);
+      setMovies(data.results.slice(0, 3));
     };
 
-    if (selectedProvider) {
-      handleProviderChanged();
+    if (selectedProvider?.id) {
+      handleProviderChanged(selectedProvider.id);
     }
   }, [selectedProvider]);
+
   const handleDropdownSelect = (item: DropdownItem) => {
     setSelectedProvider(item);
   };
@@ -35,18 +34,20 @@ export const MoviesByProviderGrid = ({ movieProviders }: Props) => {
   return (
     <>
       <div className="m-5 flex items-center justify-center gap-2">
-        <h1>Top 3 movies from</h1>
+        <h1 className="text-xl font-bold">Top 3 movies from</h1>
         <Dropdown
           buttonIconRight={<FaAngleDown />}
+          className="min-w-[200px]"
           items={movieProviders}
-          onSelect={handleDropdownSelect}
+          onItemSelect={handleDropdownSelect}
+          placeholder={movieProviders[0].name}
         />
       </div>
 
-      <div className="flex flex-row justify-evenly">
+      <div className="flex w-full flex-col items-center justify-evenly gap-10 lg:flex-row">
         {movies.map((movie, index) => (
-          <div key={index} className="flex items-center">
-            <span className="mr-0 translate-x-1/3 transform text-[12rem] font-bold text-gray-600 opacity-50">
+          <div key={index} className="relative flex items-center">
+            <span className="absolute -left-20 text-[13rem] font-bold text-gray-600 opacity-30">
               {index + 1}
             </span>
             <MovieCard movie={movie} priorityLoading={true} />

@@ -1,11 +1,17 @@
-import { MovieApiResponse, MovieFilter, MoviesByGenre } from '@/types/Movie';
+import {
+  MovieApiResponse,
+  MovieDetails,
+  MovieFilter,
+  MovieObject,
+  MoviesByGenre,
+} from '@/types/Movie';
+import { API_BASE_URL } from '@/utils/constants';
 import { getCurrentYear } from '@/utils/getCurrentYear';
-
-const BASE_URL = 'https://api.themoviedb.org/3';
+import { cache } from 'react';
 
 const headers = {
   Accept: 'application/json',
-  Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+  Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
 };
 
 const convertToHex = (arrayOfChars: number[] | number) => {
@@ -14,10 +20,10 @@ const convertToHex = (arrayOfChars: number[] | number) => {
   return arrayOfChars.join(comma);
 };
 
-export const fetchNewestMovies = async (): Promise<MovieApiResponse> => {
+export const fetchNewestMovies = async (): Promise<MovieApiResponse<MovieObject[]>> => {
   const currentYear = getCurrentYear();
   const res = await fetch(
-    `${BASE_URL}/discover/movie?sort_by=release_date.desc&primary_release_year=${currentYear}&append_to_response=images`,
+    `${API_BASE_URL}/discover/movie?sort_by=release_date.desc&primary_release_year=${currentYear}&append_to_response=images`,
     {
       headers,
       cache: 'force-cache',
@@ -26,19 +32,54 @@ export const fetchNewestMovies = async (): Promise<MovieApiResponse> => {
   return res.json();
 };
 
-export const fetchTopByStreamingService = async (providerId: number) => {
+export const fetchMostWatchedMovies = async (
+  page: number,
+  filter: string | null,
+  genre: string | null
+): Promise<MovieApiResponse<MovieObject[]>> => {
+  try {
+    let url = `${API_BASE_URL}/discover/movie?page=${page}&sort_by=${filter}&vote_count.gte=4500&vote_average.gte=7.5`;
+
+    if (genre) {
+      url += `&with_genres=${genre}`;
+    }
+
+    console.log('Fetching URL:', url);
+
+    const res = await fetch(url, {
+      headers,
+      cache: 'force-cache',
+    });
+
+    if (!res.ok) {
+      throw new Error(`API request failed with status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    console.log('API Response:', data);
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching most watched movies:', error);
+    throw new Error('Failed to fetch most watched movies');
+  }
+};
+
+export const fetchTopByStreamingService = cache(async (providerId: number) => {
   const providerFilter = convertToHex(providerId);
-  const res = await fetch(`${BASE_URL}/discover/movie?with_watch_providers=${providerFilter}`, {
+  const res = await fetch(`${API_BASE_URL}/discover/movie?with_watch_providers=${providerFilter}`, {
     headers,
     cache: 'force-cache',
   });
   return res.json();
-};
+});
 
-export const fetchTopByGenre = async (genreIds: number[]): Promise<MovieApiResponse> => {
+export const fetchTopByGenre = async (
+  genreIds: number[]
+): Promise<MovieApiResponse<MovieObject[]>> => {
   const genreFilter = convertToHex(genreIds);
   const res = await fetch(
-    `${BASE_URL}/discover/movie?with_genres=${genreFilter}&sort_by=popularity.desc`,
+    `${API_BASE_URL}/discover/movie?with_genres=${genreFilter}&sort_by=popularity.desc`,
     {
       headers,
       cache: 'force-cache',
@@ -58,7 +99,7 @@ export const mapTopMoviesByGenre = async (): Promise<MoviesByGenre> => {
     topGenres.map(async (genre) => {
       try {
         const response = await fetchTopByGenre([genre.id]);
-        const topFiveMovies = response.results.slice(0, 5);
+        const topFiveMovies = response.results;
         moviesByGenre[genre.name] = topFiveMovies;
       } catch (error) {
         console.error(`Error fetching for genre ${genre.name}: `, error);
@@ -67,16 +108,33 @@ export const mapTopMoviesByGenre = async (): Promise<MoviesByGenre> => {
     })
   );
 
-  console.log('Movies by genre: ', moviesByGenre);
-
   return moviesByGenre;
+};
+
+export const fetchMovieDetails = async (movie_id: number): Promise<MovieDetails> => {
+  try {
+    const res = await fetch(
+      `${API_BASE_URL}/movie/${movie_id}?append_to_response=images%2Ccredits&language=en-US`,
+      {
+        headers,
+      }
+    );
+    if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
+    return res.json();
+  } catch (error) {
+    console.error('There has been an error: ', error);
+    throw Error;
+  }
 };
 
 export const fetchMovieProviders = async () => {
   try {
-    const res = await fetch(`${BASE_URL}/watch/providers/movie?language=en-US&watch_region=HR`, {
-      headers,
-    });
+    const res = await fetch(
+      `${API_BASE_URL}/watch/providers/movie?language=en-US&watch_region=HR`,
+      {
+        headers,
+      }
+    );
     if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
     return res.json();
   } catch (error) {
@@ -87,7 +145,7 @@ export const fetchMovieProviders = async () => {
 
 export const fetchMovieGenres = async (): Promise<{ genres: MovieFilter[] }> => {
   try {
-    const res = await fetch(`${BASE_URL}/genre/movie/list?language=en`, { headers });
+    const res = await fetch(`${API_BASE_URL}/genre/movie/list?language=en`, { headers });
     if (!res.ok) throw new Error(`HTTP Error! Status: ${res.status}`);
     return res.json();
   } catch (error) {

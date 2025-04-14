@@ -1,6 +1,5 @@
 import { fetchMovieProviders, fetchNewestMovies, mapTopMoviesByGenre } from '@/actions/tmdb';
 import { MovieFilter, MovieObject, MovieProvider } from '@/types/Movie';
-import { NextResponse } from 'next/server';
 
 export const GET = async () => {
   try {
@@ -19,13 +18,13 @@ export const GET = async () => {
       (movie) => movie.poster_path
     );
 
-    return NextResponse.json({
+    return Response.json({
       topMoviesByGenre,
       movieProviders,
       newestMovies,
     });
   } catch (error) {
     console.error('[API ERROR] homepageData route failed:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return new Response('Internal Server Error', { status: 500 });
   }
 };

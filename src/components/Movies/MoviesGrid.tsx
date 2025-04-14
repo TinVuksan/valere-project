@@ -1,7 +1,7 @@
 import { MovieFilter, MovieObject, MoviesByGenre } from '@/types/Movie';
-import { MoviesByGenreGrid } from './MoviesByGenreGrid';
-import { MoviesByProviderGrid } from './MoviesByProviderGrid';
-import { MoviesByReleaseDateGrid } from './MoviesByReleaseDateGrid';
+import { MoviesByGenreGrid } from './MoviesGrid/MoviesByGenreGrid';
+import { MoviesByProviderGrid } from './MoviesGrid/MoviesByProviderGrid';
+import { MoviesByReleaseDateGrid } from './MoviesGrid/MoviesByReleaseDateGrid';
 
 interface Props {
   topMoviesByGenre: MoviesByGenre;
@@ -13,8 +13,8 @@ const MoviesGrid = ({ topMoviesByGenre, movieProviders, newestMovies }: Props) =
   return (
     <>
       <MoviesByProviderGrid movieProviders={movieProviders} />
-      <MoviesByGenreGrid movies={topMoviesByGenre} />
       <MoviesByReleaseDateGrid movies={newestMovies} />
+      <MoviesByGenreGrid movies={topMoviesByGenre} />
     </>
   );
 };
