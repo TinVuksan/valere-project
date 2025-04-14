@@ -17,8 +17,6 @@ export const MoviesByProviderGrid = ({ movieProviders }: Props) => {
   useEffect(() => {
     const handleProviderChanged = async (providerId: number) => {
       const data: MovieApiResponse<MovieObject[]> = await fetchTopByStreamingService(providerId);
-      console.log('Provider is: ', selectedProvider);
-      console.log('Data is: ', data);
       setMovies(data.results.slice(0, 3));
     };
 

@@ -20,7 +20,6 @@ export const GET = async (req: Request) => {
     });
 
     const data: MovieApiResponse<MovieObject[]> = await res.json();
-    console.log('Data in route is: ', data);
 
     const sortedData = data.results
       .filter((movie) => movie.poster_path)

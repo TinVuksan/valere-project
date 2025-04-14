@@ -1,7 +1,7 @@
 'use client';
+import { fetchMostWachedMoviesData } from '@/lib/api';
 import { SortOrder } from '@/types/enums';
 import { MovieFilter, MovieObject } from '@/types/Movie';
-import { fetchMostWachedMoviesData } from '@/utils/api';
 import { useCallback, useEffect, useState } from 'react';
 import { FaAngleDown, FaSpinner } from 'react-icons/fa6';
 import { useInView } from 'react-intersection-observer';
@@ -47,7 +47,6 @@ const MoviesByPopularityGrid = ({ genres }: Props) => {
   }, [inView, loadMovies, canLoadMorePages]);
 
   const handleGenreSelect = (item: DropdownItem) => {
-    console.log('Item: ', item);
     setGenre(String(item.id));
   };
 

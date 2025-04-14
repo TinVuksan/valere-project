@@ -10,7 +10,6 @@ export const getHomepageMovieIds = async () => {
         allIds.add(movie.id);
       }
     });
-    console.log('IDs with newest movies: ', allIds);
   } catch (error) {
     console.error('[generateStaticParams] Failed to fetch newest movies: ', error);
   }
@@ -24,7 +23,6 @@ export const getHomepageMovieIds = async () => {
         }
       });
     });
-    console.log('IDs with genres movies: ', allIds);
   } catch (error) {
     console.error('[generateStaticParams] Failed to fetch movies by genre: ', error);
   }

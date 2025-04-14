@@ -24,11 +24,9 @@ export const FavoriteMovieIcon = ({ movie, pxSize }: Props) => {
     let updatedFavorites: DropdownItem[];
 
     if (currentFavorites.some((favMovie) => favMovie.id === movie.id)) {
-      console.log('Unfavorited');
       updatedFavorites = currentFavorites.filter((movieParam) => movieParam.id !== movie.id);
       setIsFavorite(false);
     } else {
-      console.log('Favorited movie: ', movie);
       updatedFavorites = [...currentFavorites, movie];
       setIsFavorite(true);
     }

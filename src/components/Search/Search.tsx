@@ -36,7 +36,6 @@ const Search = () => {
     setSuggestions([]);
     setActiveIndex(-1);
 
-    console.log('isOpen: ', isOpen);
     router.push(`/movie/${movie.id}`);
   };
 
@@ -83,7 +82,7 @@ const Search = () => {
           `http://localhost:3000/api/searchData?query=${encodeURIComponent(searchTerm)}`
         );
         const data = await res.json();
-        console.log('Data in comp: ', data);
+
         setSuggestions(data.results || []);
       } catch (err) {
         console.error('Error fetching suggestions:', err);
