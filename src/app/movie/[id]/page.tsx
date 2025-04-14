@@ -3,22 +3,20 @@ import MovieHeaderSection from '@/components/Movies/MoviePage/MovieHeaderSection
 import MovieInfoSection from '@/components/Movies/MoviePage/MovieInfoSection';
 import { getHomepageMovieIds } from '@/utils/getHomepageMovieIds';
 
-interface Props {
-  params: { id: number };
-}
 export const generateStaticParams = async () => {
   const movieIds = await getHomepageMovieIds();
   return movieIds.map((id) => ({
-    id: id.toString(),
+    id: String(id),
   }));
 };
 
 export const revalidate = 60;
 export const dynamic = 'auto';
 
-const MoviePage = async ({ params }: Props) => {
-  const movie = await fetchMovieDetails(params.id);
-
+const MoviePage = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = await params;
+  const movie = await fetchMovieDetails(Number(id));
+  console.log('params in moviepage: ', params);
   return (
     <div>
       <MovieHeaderSection movie={movie} />

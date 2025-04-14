@@ -14,22 +14,24 @@ const headers = {
   Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
 };
 
-const convertToHex = (arrayOfChars: number[] | number) => {
-  if (typeof arrayOfChars === 'number') return arrayOfChars;
-  const comma = '%2C';
-  return arrayOfChars.join(comma);
-};
-
 export const fetchNewestMovies = async (): Promise<MovieApiResponse<MovieObject[]>> => {
-  const currentYear = getCurrentYear();
-  const res = await fetch(
-    `${API_BASE_URL}/discover/movie?sort_by=release_date.desc&primary_release_year=${currentYear}&append_to_response=images`,
-    {
-      headers,
-      cache: 'force-cache',
-    }
-  );
-  return res.json();
+  try {
+    const currentYear = getCurrentYear();
+    const res = await fetch(
+      `${API_BASE_URL}/discover/movie?sort_by=release_date.desc&primary_release_year=${currentYear}&append_to_response=images`,
+      {
+        headers,
+        cache: 'force-cache',
+      }
+    );
+
+    const data = await res.json();
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching most watched movies:', error);
+    throw new Error('Failed to fetch most watched movies');
+  }
 };
 
 export const fetchMostWatchedMovies = async (
@@ -44,8 +46,6 @@ export const fetchMostWatchedMovies = async (
       url += `&with_genres=${genre}`;
     }
 
-    console.log('Fetching URL:', url);
-
     const res = await fetch(url, {
       headers,
       cache: 'force-cache',
@@ -56,7 +56,6 @@ export const fetchMostWatchedMovies = async (
     }
 
     const data = await res.json();
-    console.log('API Response:', data);
 
     return data;
   } catch (error) {
@@ -65,28 +64,54 @@ export const fetchMostWatchedMovies = async (
   }
 };
 
-export const fetchTopByStreamingService = cache(async (providerId: number) => {
-  const providerFilter = convertToHex(providerId);
-  const res = await fetch(`${API_BASE_URL}/discover/movie?with_watch_providers=${providerFilter}`, {
-    headers,
-    cache: 'force-cache',
-  });
-  return res.json();
-});
+export const fetchTopByStreamingService = cache(
+  async (providerId: number): Promise<MovieApiResponse<MovieObject[]>> => {
+    try {
+      const providerFilter = encodeURIComponent(providerId);
+      const res = await fetch(
+        `${API_BASE_URL}/discover/movie?with_watch_providers=${providerFilter}`,
+        {
+          headers,
+          cache: 'force-cache',
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(`API request failed with status: ${res.status}`);
+      }
+
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching movies by streaming service: ', error);
+      throw new Error('Failed to fetch movies by streaming service');
+    }
+  }
+);
 
 export const fetchTopByGenre = async (
   genreIds: number[]
 ): Promise<MovieApiResponse<MovieObject[]>> => {
-  const genreFilter = convertToHex(genreIds);
-  const res = await fetch(
-    `${API_BASE_URL}/discover/movie?with_genres=${genreFilter}&sort_by=popularity.desc`,
-    {
-      headers,
-      cache: 'force-cache',
-    }
-  );
+  try {
+    const genreFilter = encodeURIComponent(String(genreIds));
+    const res = await fetch(
+      `${API_BASE_URL}/discover/movie?with_genres=${genreFilter}&sort_by=popularity.desc`,
+      {
+        headers,
+        cache: 'force-cache',
+      }
+    );
 
-  return res.json();
+    if (!res.ok) {
+      throw new Error(`API request failed with status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching movies by streaming service: ', error);
+    throw new Error('Failed to fetch movies by streaming service');
+  }
 };
 
 export const mapTopMoviesByGenre = async (): Promise<MoviesByGenre> => {

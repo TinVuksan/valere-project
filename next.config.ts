@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 // http://image.tmdb.org/t/p/
 const nextConfig: NextConfig = {
+  output: 'standalone',
   images: {
     remotePatterns: [
       {
