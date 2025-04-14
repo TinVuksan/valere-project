@@ -2,6 +2,7 @@
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { MovieSearchResult } from '@/types/Movie';
 import { filePathToImage } from '@/utils/filePathToImage';
+import { getBaseUrl } from '@/utils/getBaseUrl';
 import { getYearFromDate } from '@/utils/getYearFromDate';
 import { throttle } from 'lodash';
 import Image from 'next/image';
@@ -79,7 +80,7 @@ const Search = () => {
 
       try {
         const res = await fetch(
-          `http://localhost:3000/api/searchData?query=${encodeURIComponent(searchTerm)}`
+          `${getBaseUrl()}/api/searchData?query=${encodeURIComponent(searchTerm)}`
         );
         const data = await res.json();
 

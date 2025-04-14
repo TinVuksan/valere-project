@@ -1,6 +1,7 @@
 import { fetchMovieProviders, fetchNewestMovies, mapTopMoviesByGenre } from '@/actions/tmdb';
 import { MovieApiResponse, MovieFilter, MovieObject, MovieProvider } from '@/types/Movie';
 import { SortOrder } from '@/types/enums';
+import { getBaseUrl } from '@/utils/getBaseUrl';
 
 interface MostWatchedData {
   mostWatchedMovies: MovieApiResponse<MovieObject[]>;
@@ -12,7 +13,7 @@ export const fetchMostWachedMoviesData = async (
   genre?: string,
   page?: number
 ) => {
-  let url = `http://localhost:3000/api/mostWatchedData?page=${page || 1}&sort_by=${filter}.${order}`;
+  let url = `${getBaseUrl()}/api/mostWatchedData?page=${page || 1}&sort_by=${filter}.${order}`;
   if (genre) {
     url += `&with_genres=${genre}`;
   }
