@@ -2,7 +2,7 @@ import { MovieObject } from '@/types/Movie';
 import { filePathToImage } from '@/utils/filePathToImage';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FavoriteMovieIcon } from '../FavoriteMovieIcon/FavoriteMovieIcon';
+import { FavoriteMovieIcon } from './FavoriteMovieIcon';
 
 interface Props {
   movie: MovieObject;
