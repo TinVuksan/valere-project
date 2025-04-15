@@ -19,7 +19,7 @@ interface DropdownProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Dropdown = ({
   buttonIconRight,
   onItemSelect,
-  items = [],
+  items,
   placeholder,
   className,
   ...restProps

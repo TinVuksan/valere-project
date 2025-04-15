@@ -22,11 +22,11 @@ const MovieCarousel = ({ movies, title }: Props) => {
   };
   return (
     <>
-      {title && <h2 className="mb-1 text-5xl font-bold text-gray-400 opacity-85">{title}</h2>}
+      {title && <h2 className="text-5xl font-bold text-gray-400 opacity-85">{title}</h2>}
       <div className="flex flex-row">
         <div
           ref={containerRef}
-          className="scrollbar-none mx-2 my-3 flex h-[420px] flex-row items-center justify-start gap-5 overflow-y-hidden overflow-x-scroll scroll-smooth"
+          className="scrollbar-none mx-2 flex h-[420px] flex-row items-center justify-start gap-5 overflow-y-hidden overflow-x-scroll scroll-smooth"
           style={{
             width: `calc(${movies.length} * ${CARD_WIDTH}px)`,
           }}

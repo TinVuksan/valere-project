@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { FaAngleDown } from 'react-icons/fa6';
 import { RxHamburgerMenu } from 'react-icons/rx';
 import { Dropdown, DropdownItem } from '../Dropdown/Dropdown';
-import Search from '../Search/Search';
+import SearchWithDropdown from '../Search/SearchWithDropdown';
 
 const Navbar = () => {
   const [favoriteMovies, setFavoriteMovies] = useState<DropdownItem[] | null>(null);
@@ -51,7 +51,7 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden items-center gap-8 lg:flex">
-          <Link href="/mostWatched" className={`text-xl ${navLinkStyle('/mostWatched')}`}>
+          <Link href="/mostwatched" className={`text-xl ${navLinkStyle('/mostwatched')}`}>
             Most Watched
           </Link>
           <Dropdown
@@ -59,8 +59,9 @@ const Navbar = () => {
             onItemSelect={handleDropdownSelect}
             buttonIconRight={<FaAngleDown />}
             placeholder="Favorite Movies"
+            className="w-[250px]"
           />
-          <Search />
+          <SearchWithDropdown />
         </div>
 
         <div className="lg:hidden">
@@ -72,8 +73,8 @@ const Navbar = () => {
         <div className="mt-4 flex flex-col items-center gap-4 lg:hidden">
           <Link
             onClick={() => setMenuOpen(false)}
-            href="/mostWatched"
-            className={`text-lg ${navLinkStyle('/mostWatched')}`}
+            href="/mostwatched"
+            className={`text-lg ${navLinkStyle('/mostwatched')}`}
           >
             Most Watched
           </Link>
@@ -84,7 +85,7 @@ const Navbar = () => {
             placeholder="Favorite Movies"
             className="w-[300px]"
           />
-          <Search />
+          <SearchWithDropdown />
         </div>
       )}
     </nav>

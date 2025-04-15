@@ -24,6 +24,7 @@ const MoviesByPopularityGrid = ({ genres }: Props) => {
   const [filter, setFilter] = useState<SortFilter>({});
   const [genre, setGenre] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(1);
+
   const { ref, inView } = useInView();
 
   const canLoadMorePages = totalPages === undefined || pageNumber <= totalPages;

@@ -26,11 +26,9 @@ export const fetchMostWachedMoviesData = async (
 };
 
 export const getHomepageData = async () => {
-  const [topMoviesByGenre, providers, newestMoviesResponse] = await Promise.all([
-    mapTopMoviesByGenre(),
-    fetchMovieProviders(),
-    fetchNewestMovies(),
-  ]);
+  const providers = await fetchMovieProviders();
+  const newestMoviesResponse = await fetchNewestMovies();
+  const topMoviesByGenre = await mapTopMoviesByGenre();
 
   const movieProviders: MovieFilter[] = providers.results.map((provider: MovieProvider) => ({
     id: provider.provider_id,

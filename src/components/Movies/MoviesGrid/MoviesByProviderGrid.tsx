@@ -31,11 +31,11 @@ export const MoviesByProviderGrid = ({ movieProviders }: Props) => {
 
   return (
     <>
-      <div className="m-5 flex items-center justify-center gap-2">
+      <div className="m-5 flex flex-col items-center justify-center gap-2 md:flex-row">
         <h1 className="text-xl font-bold">Top 3 movies from</h1>
         <Dropdown
           buttonIconRight={<FaAngleDown />}
-          className="min-w-[200px]"
+          className="min-w-[230px]"
           items={movieProviders}
           onItemSelect={handleDropdownSelect}
           placeholder={movieProviders[0].name}
@@ -48,7 +48,7 @@ export const MoviesByProviderGrid = ({ movieProviders }: Props) => {
             <span className="absolute -left-20 text-[13rem] font-bold text-gray-600 opacity-30">
               {index + 1}
             </span>
-            <MovieCard movie={movie} priorityLoading={true} />
+            <MovieCard movie={movie} priorityLoading={true} enlarged />
           </div>
         ))}
       </div>
