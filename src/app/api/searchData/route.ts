@@ -1,10 +1,4 @@
-import { MovieApiResponse, MovieObject, MovieSearchResult } from '@/types/Movie';
-import { API_BASE_URL } from '@/utils/constants';
-
-const headers = {
-  Accept: 'application/json',
-  Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
-};
+import { fetchMoviesBySearch } from '@/actions/tmdb';
 
 export const GET = async (req: Request) => {
   try {
@@ -15,23 +9,7 @@ export const GET = async (req: Request) => {
       return Response.json({ results: [] });
     }
 
-    const res = await fetch(`${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`, {
-      headers,
-    });
-
-    const data: MovieApiResponse<MovieObject[]> = await res.json();
-
-    const sortedData = data.results
-      .filter((movie) => movie.poster_path)
-      .sort((a, b) => b.popularity - a.popularity);
-
-    const results: MovieSearchResult[] = (sortedData || []).map((movie: MovieObject) => ({
-      id: movie.id,
-      name: movie.title,
-      image: movie.poster_path,
-      release_date: movie.release_date,
-    }));
-
+    const results = await fetchMoviesBySearch(query);
     return Response.json({ results });
   } catch (error) {
     console.error('[API ERROR] homepageData route failed:', error);

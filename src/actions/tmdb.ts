@@ -4,6 +4,7 @@ import {
   MovieFilter,
   MovieObject,
   MoviesByGenre,
+  MovieSearchResult,
 } from '@/types/Movie';
 import { API_BASE_URL } from '@/utils/constants';
 import { getCurrentYear } from '@/utils/getCurrentYear';
@@ -176,5 +177,31 @@ export const fetchMovieGenres = async (): Promise<{ genres: MovieFilter[] }> => 
   } catch (error) {
     console.log('There has been an error: ', error);
     throw error;
+  }
+};
+
+export const fetchMoviesBySearch = async (query: string): Promise<MovieSearchResult[]> => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`, {
+      headers,
+    });
+
+    const data: MovieApiResponse<MovieObject[]> = await res.json();
+
+    const sortedData = data.results
+      .filter((movie) => movie.poster_path)
+      .sort((a, b) => b.popularity - a.popularity);
+
+    const results: MovieSearchResult[] = sortedData.map((movie: MovieObject) => ({
+      id: movie.id,
+      name: movie.title,
+      image: movie.poster_path,
+      release_date: movie.release_date,
+    }));
+
+    return results;
+  } catch (error) {
+    console.error('Error fetching movies by search query:', error);
+    throw new Error('Failed to fetch movies by search query');
   }
 };
