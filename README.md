@@ -1,6 +1,28 @@
-## Getting Started
+# Binge-It
 
-First, run the development server:
+A web application created for providing users with ideas on which movie to watch next. 
+
+It includes latest movies, top movies by genre or a streaming service. 
+
+It also provides users with most watched movies based on popularity and score with filters.
+
+User can mark a movie as a favorite to save it for some later time, or just search a movie for more details about it.
+
+*Owner: Tin Vukšan*
+
+## Project setup
+
+The project itself is a Next.js application that can be containerized using Docker. It can be used for both dev and production environments.
+
+---
+
+## Development
+
+Starting the project locally requires you to create a `.env.development` file and add environment variables based on the provided `.env.template` file.
+
+### Without docker
+
+If you wish to start the project locally without Docker, after you created your `.env.development` file, simply run
 
 ```bash
 npm run dev
@@ -14,21 +36,17 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### With docker
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Make sure you have **Docker** and **Docker Compose** installed
+2. Create the `.env.development` file based on `env.template`
+3. Run the following command: `npm run dev`
 
-## Learn More
+**If you wish to run in production mode locally**
 
-To learn more about Next.js, take a look at the following resources:
+1. Set your `NEXT_PUBLIC_API_ROUTE_URL` in `.env.production` to `http://localhost:3000` 
+2. Make sure your project is built - `npm run build`
+3. Run `docker-compose -f docker-compose.prod.yml up --build`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

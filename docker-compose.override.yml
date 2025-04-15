@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  nextjs:
+    build:
+      dockerfile: Dockerfile.dev
+    environment:
+      - NODE_ENV=development
+    command: npm run dev  # Starts the app in development mode
+    env_file:
+      - .env.development
+    volumes:
+      - .:/app  # Mount local code to the container for live reloads
+      - /app/node_modules
+    ports:
+      - "3000:3000"

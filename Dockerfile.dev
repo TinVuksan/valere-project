@@ -1,0 +1,24 @@
+# syntax=docker.io/docker/dockerfile:1
+
+FROM node:18-alpine AS dev
+
+WORKDIR /app
+
+# Copy only package files for dependency install
+COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+
+RUN \
+  if [ -f yarn.lock ]; then yarn install; \
+  elif [ -f package-lock.json ]; then npm install; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm install; \
+  else echo "No lockfile found." && exit 1; \
+  fi
+
+# Add dumb-init for signal handling in dev
+RUN apk add --no-cache dumb-init
+
+# Use dumb-init to manage PID 1 in dev (avoids zombie processes)
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start Next.js dev server
+CMD ["npm", "run", "dev"]

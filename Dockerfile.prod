@@ -1,0 +1,52 @@
+# syntax=docker.io/docker/dockerfile:1
+
+# ---------- Base Layer ----------
+    FROM node:18-alpine AS base
+
+    # ---------- Dependencies Layer ----------
+    FROM base AS deps
+    RUN apk add --no-cache libc6-compat
+    WORKDIR /app
+    
+    COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./
+    RUN \
+      if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
+      elif [ -f package-lock.json ]; then npm ci; \
+      elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
+      else echo "Lockfile not found." && exit 1; \
+      fi
+    
+    # ---------- Builder Layer ----------
+    FROM base AS builder
+    WORKDIR /app
+    COPY --from=deps /app/node_modules ./node_modules
+    COPY . .
+    
+    RUN \
+      if [ -f yarn.lock ]; then yarn run build; \
+      elif [ -f package-lock.json ]; then npm run build; \
+      elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
+      else echo "Lockfile not found." && exit 1; \
+      fi
+    
+    # ---------- Runtime Layer ----------
+    FROM base AS runner
+    WORKDIR /app
+    
+    # Create non-root user for security
+    RUN addgroup --system --gid 1001 nodejs \
+      && adduser --system --uid 1001 nextjs
+    
+    # Copy static and standalone build output
+    COPY --from=builder /app/public ./public
+    COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+    COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+    
+    # Switch to non-root user
+    USER nextjs
+    
+    # Port 3000 exposed for local testing or self-hosting
+    EXPOSE 3000
+    
+    # Start Next.js server with standalone server.js
+    CMD ["node", ".next/standalone/server.js"]
